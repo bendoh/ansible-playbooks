@@ -1,0 +1,17 @@
+- hosts: localhost
+# Remove backup files
+  tasks:
+  - name: "Find backup files older than two weeks"
+    find:
+      age: '2w'
+      paths: etc/
+      patterns: sample.log.*
+    register: backup_files
+  - debug:
+      var: backup_files
+  - name: "Delete the backup files"
+    file:
+      path: '{{ item.path }}'
+      state: absent
+    loop: "{{ backup_files.files|flatten(levels=1) }}"
+
